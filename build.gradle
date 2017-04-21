@@ -12,12 +12,18 @@ buildscript {
     }
 }
 
-apply plugin: 'kotlin'
+subprojects {
+    group = 'annotation-processing'
+    version = '1.0'
 
-repositories {
-    mavenCentral()
+    apply plugin: 'kotlin'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+    }
 }
 
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
-}
