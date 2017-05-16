@@ -12,6 +12,7 @@ import javax.lang.model.element.*;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.JavaFileObject;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -101,15 +102,11 @@ public class ProcessorJava extends AbstractProcessor {
                         .addMethod(buildMethod)
                         .build();
 
-                File destFile = new File("build/generated/source/apt/main");
-
-                System.out.println("dest folder="+destFile.getAbsolutePath());
+                System.out.println("builderClassName="+builderClassName);
 
                 JavaFile.builder(classWrap.packageName(), elementBuilder)
                         .build()
-                        .writeTo(destFile);
-
-
+                        .writeTo(filer);
 
             } catch (IOException e) {
                 e.printStackTrace();

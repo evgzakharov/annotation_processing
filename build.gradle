@@ -3,6 +3,7 @@ version '1.0-SNAPSHOT'
 
 buildscript {
     ext.kotlin_version = '1.1.2-2'
+    ext.generatedSourcesPath = 'build/generated/source/apt/main/'
 
     repositories {
         mavenCentral()
@@ -36,7 +37,13 @@ subprojects {
 
     compileJava.doFirst {
         sourceSets.all { set ->
-            set.allSource.srcDirs.each {it.mkdirs()}
+            set.allSource.srcDirs.each { it.mkdirs() }
+        }
+
+        def generatedSourcesDir = file(generatedSourcesPath)
+        if (generatedSourcesDir.exists()) {
+            def collection = generatedSourcesDir.listFiles()
+            collection.each {  delete it }
         }
     }
 
