@@ -1,0 +1,4 @@
+dependencies {
+    apt project(":simple_processor")
+    compileOnly project(":simple_processor")
+}
