@@ -4,34 +4,34 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
+import kotlin.collections.SetsKt;
 
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedOptions;
+import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.*;
+import javax.lang.model.util.ElementFilter;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class ProcessorJava extends AbstractProcessor {
-//    private Types typeUtils;
-//    private Elements elementUtils;
-//    private Filer filer;
-//    private Messager messager;
-//
-//    @Override
-//    public synchronized void init(ProcessingEnvironment processingEnv) {
-//        super.init(processingEnv);
-//        typeUtils = processingEnv.getTypeUtils();
-//        elementUtils = processingEnv.getElementUtils();
-//        filer = processingEnv.getFiler();
-//        messager = processingEnv.getMessager();
-//    }
+    private Types typeUtils;
+    private Elements elementUtils;
+    private Filer filer;
+    private Messager messager;
+
+    @Override
+    public synchronized void init(ProcessingEnvironment processingEnv) {
+        super.init(processingEnv);
+        typeUtils = processingEnv.getTypeUtils();
+        elementUtils = processingEnv.getElementUtils();
+        filer = processingEnv.getFiler();
+        messager = processingEnv.getMessager();
+    }
 
     @Override
     public SourceVersion getSupportedSourceVersion() {
@@ -60,6 +60,26 @@ public class ProcessorJava extends AbstractProcessor {
 
             TestingClassJava annotation = element.getAnnotation(TestingClassJava.class);
             String logLevel = annotation.level();
+
+            for (Element enclosedElement : element.getEnclosedElements()) {
+                if (enclosedElement.getKind() == ElementKind.FIELD) {
+                    Set<Modifier> modifiers = enclosedElement.getModifiers();
+                    StringBuilder sb = new StringBuilder();
+                    if (modifiers.contains(Modifier.PRIVATE)) {
+                        sb.append("private ");
+                    } else if (modifiers.contains(Modifier.PROTECTED)) {
+                        sb.append("protected ");
+                    } else if (modifiers.contains(Modifier.PUBLIC)) {
+                        sb.append("public ");
+                    }
+                    if (modifiers.contains(Modifier.STATIC))
+                        sb.append("static ");
+                    if (modifiers.contains(Modifier.FINAL))
+                        sb.append("final ");
+                    sb.append(enclosedElement.asType()).append(" ").append(enclosedElement.getSimpleName());
+                    System.out.println(sb);
+                }
+            }
 
             try {
                 TypeElement targetElement = (TypeElement) element;
